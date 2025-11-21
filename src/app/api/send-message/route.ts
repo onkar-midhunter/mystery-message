@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     );
   }
   try {
-    const user = await UserModel.findOne({ userName });
+    const user = await UserModel.findOne({ userName }).exec();
     if (!user) {
       return Response.json(
         { success: false, message: "User is not available" },
