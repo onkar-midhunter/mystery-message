@@ -1,5 +1,6 @@
 import UserModel from "@/model/User.model";
-import { getServerSession, User } from "next-auth";
+import { User } from "next-auth";
+import {getServerSession} from "next-auth/next"
 import dbConnect from "@/lib/dbConnect";
 import { authOptions } from "../auth/[...nextauth]/option";
 import { success } from "zod";
