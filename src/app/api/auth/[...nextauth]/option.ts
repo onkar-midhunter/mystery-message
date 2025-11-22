@@ -10,64 +10,70 @@ export const authOptions: NextAuthOptions = {
       id: 'credentials',
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'text' },
+        identifier: { label: 'Email or Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
+
       async authorize(credentials: any): Promise<any> {
         await dbConnect();
+
         try {
           const user = await UserModel.findOne({
             $or: [
               { email: credentials.identifier },
-              { username: credentials.identifier },
+              { userName: credentials.identifier },  // FIXED HERE
             ],
           });
+
           if (!user) {
-            throw new Error('No user found with this email');
+            throw new Error('No user found with this email or username');
           }
+
           if (!user.isVerified) {
             throw new Error('Please verify your account before logging in');
           }
+
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
             user.password
           );
-          if (isPasswordCorrect) {
-            return user;
-          } else {
+
+          if (!isPasswordCorrect) {
             throw new Error('Incorrect password');
           }
+
+          return user;
+
         } catch (err: any) {
-          throw new Error(err);
+          throw new Error(err.message || 'Login failed');
         }
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token._id = user._id?.toString(); // Convert ObjectId to string
+        token._id = user._id?.toString();
+        token.userName = user.userName;
         token.isVerified = user.isVerified;
         token.isAcceptingMessage = user.isAcceptingMessage;
-        token.userName = user.userName;
       }
       return token;
     },
+
     async session({ session, token }) {
       if (token) {
         session.user._id = token._id;
+        session.user.userName = token.userName;
         session.user.isVerified = token.isVerified;
         session.user.isAcceptingMessage = token.isAcceptingMessage;
-        session.user.userName = token.userName;
       }
       return session;
     },
   },
-  session: {
-    strategy: 'jwt',
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/sign-in',
-  },
+
+  session: { strategy: 'jwt' },
+  secret: process.env.NEXT_AUTH_SECRET,
+  pages: { signIn: '/sign-in' },
 };
