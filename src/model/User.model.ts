@@ -18,6 +18,7 @@ const MessageSchema: Schema<Message> = new Schema({
   },
 });
 export interface User extends Document {
+  _id:string,
   userName: string;
   email: string;
   password: string;
