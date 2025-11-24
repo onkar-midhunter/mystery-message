@@ -9,7 +9,8 @@ import mongoose from "mongoose";
 export async function GET(request: Request) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-
+ 
+  
   const _user: User = session?.user as User;
   if (!session || !_user) {
     return Response.json(
@@ -17,8 +18,11 @@ export async function GET(request: Request) {
       { status: 401 }
     );
   }
+  
+  
   const userId = _user._id;
   try {
+   
     const user = await UserModel.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(userId) } },
       { $unwind: "$messages" },
@@ -27,7 +31,7 @@ export async function GET(request: Request) {
     ]).exec();
     if (!user || user.length === 0) {
       return Response.json(
-        { message: "User not found", success: false },
+        { message: "Messages not found", success: false },
         { status: 404 }
       );
     }
