@@ -8,7 +8,6 @@ export async function proxy(request: NextRequest) {
     secret: process.env.NEXT_AUTH_SECRET,
   });
   const url = request.nextUrl;
-  console.log("token in proxy.ts:", token);
 
   // If logged in and trying to access public pages → redirect to dashboard
   if (
