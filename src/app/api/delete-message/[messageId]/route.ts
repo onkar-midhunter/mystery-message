@@ -5,9 +5,9 @@ import UserModel from "@/model/User.model";
 
 export async function DELETE(
   request: Request,
-  context: { params: { messageId: string } }
+  context: { params: Promise<{ messageId: string }> }  // params is a Promise now
 ) {
-  const messageId = context.params.messageId;
+  const { messageId } = await context.params;  // AWAIT the params
   console.log("message Id :", messageId);
 
   await dbConnect();
