@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { SkeletonCard } from "@/components/loading_skelton";
+import { HomeSkelton } from "@/components/HomeSkelton";
 
 const DashboardPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -53,33 +54,36 @@ const DashboardPage = () => {
   }, [setValue, toast]);
 
   const fetchMessages = useCallback(
-    async (refresh: boolean = false) => {
-      setIsLoading(true);
-      try {
-        setTimeout(async()=>{
-           const response = await axios.get<ApiResponse>("/api/get-message");
-        setMessages(response.data.messages || []);
-        if (refresh) {
-          toast({
-            title: "Refreshed Messages",
-            description: "Showing latest messages",
-          });
-        }
-        },5000)
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
+  async (refresh: boolean = false) => {
+    setIsLoading(true);
+    setMessages([]); // Clear messages when loading
+    try {
+      // REMOVE the setTimeout - it breaks the loading state
+      const response = await axios.get<ApiResponse>("/api/get-message");
+      setMessages(response.data.messages || []);
+      if (refresh) {
         toast({
-          title: "Error in fetchMessages",
-          description:
-            axiosError.response?.data.message ?? "Failed to fetch messages",
-          variant: "destructive",
+          title: "Refreshed Messages",
+          description: "Showing latest messages",
         });
-      } finally {
-        setIsLoading(false);
       }
-    },
-    [toast]
-  );
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast({
+        title: "Error in fetchMessages",
+        description:
+          axiosError.response?.data.message ?? "Failed to fetch messages",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  },
+  [toast]
+);
+
+
+
 
   // Fetch initial state from the server
   useEffect(() => {
@@ -114,7 +118,7 @@ const DashboardPage = () => {
   if (!session || !session.user) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        Loading...
+        <HomeSkelton/>
       </div>
     );
   }
@@ -177,18 +181,25 @@ const DashboardPage = () => {
       </Button>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {messages.length > 0 ? (
-            messages.map((message) => (
-              <MessageCard
-                key={message._id as string}
-                message={message}
-                onMessageDelete={handleDeleteMessage}
-              />
-            ))
-          ) : (
-            <SkeletonCard/>
-          )}
-        </div>
+  {isLoading ? (
+    // Show skeleton while loading
+    <SkeletonCard />
+  ) : messages.length > 0 ? (
+    // Show messages when loaded
+    messages.map((message) => (
+      <MessageCard
+        key={message._id as string}
+        message={message}
+        onMessageDelete={handleDeleteMessage}
+      />
+    ))
+  ) : (
+    // Show empty state when no messages
+    <p className="text-center col-span-full text-gray-500">
+      No messages yet. Share your profile link to receive messages!
+    </p>
+  )}
+</div>
     </div>
   );
 };
