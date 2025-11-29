@@ -16,6 +16,9 @@ interface VerificationEmailProps {
 }
 
 export default function VerificationEmail({ username, otp }: VerificationEmailProps) {
+  // Get the base URL from environment variable
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  
   return (
     <Html lang="en" dir="ltr">
       <Head>
@@ -52,7 +55,7 @@ export default function VerificationEmail({ username, otp }: VerificationEmailPr
         </Row>
         <Row>
           <Button
-            href={`http://localhost:3000/verify/${username}`}
+            href={`${baseUrl}/verify/${username}`}
             style={{ color: '#61dafb' }}
           >
             Verify here

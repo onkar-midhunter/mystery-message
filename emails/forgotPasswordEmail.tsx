@@ -16,6 +16,9 @@ interface VerificationEmailProps {
 }
 
 export default function forgotPasswordEmail({ username, otp }: VerificationEmailProps) {
+  // Get the base URL from environment variable
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  
   return (
     <Html lang="en" dir="ltr">
       <Head>
@@ -51,7 +54,7 @@ export default function forgotPasswordEmail({ username, otp }: VerificationEmail
         </Row>
         <Row>
           <Button
-            href={`http://localhost:3000/reset/${username}`}
+            href={`${baseUrl}/reset/${username}`}
             style={{ color: '#61dafb' }}
           >
             Verify here
