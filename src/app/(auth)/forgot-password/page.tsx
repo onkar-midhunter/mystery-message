@@ -30,17 +30,19 @@ const ForgotPassword = () => {
         description: errorMessage,
         variant: "destructive",
       });
+    }finally{
+      setLoading(false)
     }
   }
   return (
      <div className="bg-gray-700 w-full h-screen flex flex-col justify-center items-center text-white px-4">
       <h2 className="absolute top-10 text-3xl lg:text-5xl font-bold text-center">
-        Enter Your Email to Reset Password
+        Enter Your UserName to Reset Password
       </h2>
        <div className="relative mt-16 flex gap-2 items-center w-full max-w-md">
         <Input
           type="text"
-          placeholder="Email"
+          placeholder="userName"
           className="bg-gray-900 border-gray-600 text-white"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
