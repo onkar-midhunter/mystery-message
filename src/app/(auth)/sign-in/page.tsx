@@ -1,69 +1,69 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { signIn } from 'next-auth/react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { signIn } from "next-auth/react";
 import {
   Form,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
-import { signInSchema } from '@/schemas/signInSchema';
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { signInSchema } from "@/schemas/signInSchema";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function SignInForm() {
   const router = useRouter();
- const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: '',
-      password: '',
+      identifier: "",
+      password: "",
     },
   });
 
   const { toast } = useToast();
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    setIsSubmitting(true)
-    const result = await signIn('credentials', {
+    setIsSubmitting(true);
+    const result = await signIn("credentials", {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
     });
-  console.log(result?.error);
-  
+    console.log(result?.error);
+
     if (result?.error) {
-      if (result.error === 'CredentialsSignin') {
+      if (result.error === "CredentialsSignin") {
         toast({
-          title: 'Login Failed',
-          description: 'Incorrect username or password',
-          variant: 'destructive',
-        })
+          title: "Login Failed",
+          description: "Incorrect username or password",
+          variant: "destructive",
+        });
         setIsSubmitting(false);
       } else {
         toast({
-          title: 'Error',
+          title: "Error",
           description: result.error,
-          variant: 'destructive',
+          variant: "destructive",
         });
-        setIsSubmitting(false)
+        setIsSubmitting(false);
       }
     }
 
     if (result?.url) {
       console.log("succefully login");
-      
-      router.replace('/dashboard');
-      setIsSubmitting(false)
+
+      router.replace("/dashboard");
+      setIsSubmitting(false);
     }
   };
 
@@ -100,7 +100,7 @@ export default function SignInForm() {
                 </FormItem>
               )}
             />
-            <Button className='w-full' type="submit">
+            <Button className="w-full" type="submit">
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -114,7 +114,15 @@ export default function SignInForm() {
         </Form>
         <div className="text-center mt-4">
           <p>
-            Not a member yet?{' '}
+            <Link
+              href="/forgot-password"
+              className="text-blue-600 hover:text-blue-800"
+            >
+              forgot password
+            </Link>
+          </p>
+          <p>
+            Not a member yet?{" "}
             <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
               Sign up
             </Link>
