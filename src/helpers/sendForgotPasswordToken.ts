@@ -9,7 +9,7 @@ export async function sendForgotPasswordEmail(
 ): Promise<ApiResponse> {
   try {
     await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
+      from: 'Onkar <hello@onkar-khedekar.online>',
       to: email,
       subject: "mystery message | forgot Password code ",
       react: forgotPasswordEmail({ username: userName, otp: verifyCode }),
